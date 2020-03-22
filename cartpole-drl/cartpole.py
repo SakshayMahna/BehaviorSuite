@@ -2,12 +2,15 @@ import gym
 import numpy as np
 from dqn import DQN 
 
+#The Cartpole Class
 class Cartpole():
+    #Initialize the environment
     def __init__(self):
         self.env = gym.make('CartPole-v1')
         self.observation_space = self.env.observation_space.shape[0]
         self.action_space = self.env.action_space.n
 
+    #Solve the environment
     def solve(self):
         solver = DQN(self.observation_space, self.action_space)
         run = 0
@@ -19,6 +22,7 @@ class Cartpole():
 
             step = 0
             while True:
+                self.env.render()
                 step = step + 1
                 action = solver.act(state)
                 state_next, reward, terminal, info = self.env.step(action)

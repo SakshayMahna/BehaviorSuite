@@ -16,25 +16,31 @@ EXPLORATION_MAX = 1.0
 EXPLORATION_MIN = 0.01
 EXPLORATION_DECAY = 0.995
 
+#Deep Q Neural Network Class
 class DQN:
+    #Initialize the class
     def __init__(self, observation_space, action_space):
         self.exploration_rate = EXPLORATION_MAX
         self.action_space = action_space
+        self.observation_space = observation_space
         self.memory = deque(maxlen=MEMORY_SIZE)
         self.model = self.generate_model()
 
+    #Generate the Neural Network
     def generate_model(self):
         model = Sequential()
-        model.add(Dense(24, input_shape(observation_space,), activation="relu"))
+        model.add(Dense(24, input_shape=(self.observation_space,), activation="relu"))
         model.add(Dense(24, activation="relu"))
         model.add(Dense(self.action_space, activation="linear"))
         model.compile(loss="mse", optimizer=Adam(lr=LEARNING_RATE))
 
         return model
 
+    #Save state to memory
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
+    #Explore / Exploit
     def act(self, state):
         if np.random.rand() < self.exploration_rate:
             return random.randrange(self.action_space)
@@ -42,6 +48,7 @@ class DQN:
         q_values = self.model.predict(state)
         return np.argmax(q_values[0])
 
+    #Update
     def experience_replay(self):
         if len(self.memory) < BATCH_SIZE:
             return
